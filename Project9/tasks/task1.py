@@ -2,27 +2,73 @@
 # -*- coding: utf-8 -*-
 
 if __name__ == '__main__':
-
+    # Список студентов.
     students = []
 
-    num_students = int(input("Введите количество студентов: "))
+    # Организовать бесконечный цикл запроса команд.
+    while True:
+        # Запросить команду из терминала.
+        command = input(">>> ").lower()
 
-    for _ in range(num_students):
+        # Выполнить действие в соответствие с командой.
+        if command == 'exit':
+            break
+        elif command == 'add':
+            # Запросить данные о студенте.
+            full_name = input("Фамилия и инициалы? ")
+            group_number = input("Номер группы? ")
+            grades_str = input("Успеваемость (через пробел)? ")
 
-        student_data = {'фамилия и инициалы': input("Введите фамилию и инициалы студента: "),
-                        'номер группы': int(input("Введите номер группы студента: ")),
-                        'успеваемость': [float(input(f"Введите оценку {i + 1}: ")) for i in range(5)]}
+            # Преобразовать строки с оценками в список чисел.
+            grades = [float(grade) for grade in grades_str.split()]
 
-        students.append(student_data)
+            # Создать словарь.
+            student = {
+                'full_name': full_name,
+                'group_number': group_number,
+                'grades': grades,
+            }
 
-    students.sort(key=lambda x: x['номер группы'])
+            # Добавить словарь в список.
+            students.append(student)
 
-    flag = False
-    for student in students:
-        avg_grade = sum(student['успеваемость']) / len(student['успеваемость'])
-        if avg_grade > 4.0:
-            print(f"Фамилия и инициалы: {student['фамилия и инициалы']}, Номер группы: {student['номер группы']}")
-            flag = True
+            # Отсортировать список по номеру группы.
+            students.sort(key=lambda item: item.get('group_number', ''))
 
-    if not flag:
-        print("Нет студентов с средним баллом больше 4.0.")
+        elif command == 'list':
+            # Заголовок таблицы.
+            line = '+-{}-+-{}-+-{}-+'.format(
+                '-' * 30,
+                '-' * 15,
+                '-' * 20
+            )
+            print(line)
+            print(
+                '| {:^30} | {:^15} | {:^20} |'.format(
+                    "Ф.И.О.",
+                    "Номер группы",
+                    "Успеваемость"
+                )
+            )
+            print(line)
+            # Вывести данные о студентах с успеваемостью более 4.0.
+            for student in students:
+                average_grade = sum(student.get('grades', 0)) / len(student.get('grades', 1))
+                if average_grade > 4.0:
+                    print(
+                        '| {:<30} | {:<15} | {:<20} |'.format(
+                            student.get('full_name', ''),
+                            student.get('group_number', ''),
+                            ', '.join(map(str, student.get('grades', [])))
+                        )
+                    )
+            print(line)
+        elif command == 'help':
+            # Вывести справку о работе с программой.
+            print("Список команд:\n")
+            print("add - добавить студента;")
+            print("list - вывести список студентов;")
+            print("help - отобразить справку;")
+            print("exit - завершить работу с программой.")
+        else:
+            print(f"Неизвестная команда {command}")
